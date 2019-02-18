@@ -1,0 +1,45 @@
+{% if 'left' in side %}
+{%   set mlag_octet = '254' %}
+{% elif 'right' in side %}
+{%   set mlag_octet = '255' %}
+{% endif %}
+
+vlan 4090
+   name mlag-peer
+   trunk group mlag-peer
+!
+interface vlan 4090
+   ip address 10.0.99.{{ mlag_octet }}/31
+   no autostate
+   no shutdown
+!
+interface Ethernet 10
+   description mlag peer link
+   channel-group 999 mode active
+!
+interface port-channel 999
+   description MLAG Peer
+   switchport mode trunk
+   spanning-tree link-type point-to-point
+   switchport trunk group mlag-peer
+   exit
+!
+no spanning-tree vlan 4090
+!
+mlag configuration
+   domain-id leafs
+   peer-link port-channel 999
+   local-interface vlan 4090
+{% if '254' in mlag_octet %}
+   peer-address 10.0.99.255
+{% elif '255' in mlag_octet %}
+   peer-address 10.0.99.254
+{% endif %}
+   no shutdown
+!
+vlan 4091
+   name mlag-ibgp
+   trunk group mlag-peer
+
+no spanning-tree vlan 4091
+

@@ -1,0 +1,5 @@
+---
+ansible_network_os: eos
+ansible_user: ansible
+ansible_ssh_pass: automation
+ansible_connection: network_cli

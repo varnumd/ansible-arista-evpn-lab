@@ -1,0 +1,18 @@
+router bgp {{ asn }}
+   router-id {{ loopback0_ip }}
+   no bgp default ipv4-unicast
+   bgp log-neighbor-changes
+   distance bgp 20 200 200
+   maximum-paths 4 ecmp 64
+{% for item in bgp_neighbors %}
+   neighbor {{ item.neighbor }} remote-as {{ item.remote_as }}
+{%   if item.remote_as == asn %}   
+   neighbor {{ item.neighbor }} next-hop-self
+{%   endif %}
+{% endfor %}
+   !
+   address-family ipv4
+      network {{ loopback0_ip }}/32  
+{% for item in bgp_neighbors %}      
+      neighbor {{ item.neighbor }} activate
+{% endfor %}

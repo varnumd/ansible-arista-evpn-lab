@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Create Host Vars
+      command: "python3 gen_config.py"

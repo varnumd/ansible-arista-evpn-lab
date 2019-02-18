@@ -1,0 +1,13 @@
+---
+- hosts: leafs
+  connection: local
+  gather_facts: no
+
+  vars:
+    vrf_name: "{{ vrf_name }}"
+    vrf_id: "{{vrf_id }}"
+
+  tasks:
+  - name: Configure L3 VXLAN VRF
+    eos_config:
+      src: single_vrf.j2

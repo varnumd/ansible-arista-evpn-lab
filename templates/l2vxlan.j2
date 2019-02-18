@@ -1,0 +1,13 @@
+{% set vlan_vni = vlan_id|int + 110000 %}
+
+vlan {{ vlan_id }}
+   name {{ vlan_name }}
+
+interface Vxlan1
+   vxlan vlan {{ vlan_id }} vni {{ vlan_vni }}
+
+router bgp {{ leaf_asn }}
+   vlan {{ vlan_id }}
+      rd {{ leaf_asn }}:{{ vlan_vni }}
+      route-target both {{ vlan_id }}:{{ vlan_vni }}
+      redistribute learned

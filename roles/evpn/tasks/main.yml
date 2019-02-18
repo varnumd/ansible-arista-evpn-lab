@@ -1,0 +1,7 @@
+---
+# tasks file for evpn
+- import_tasks: interfaces.yml
+- import_tasks: bgp.yml
+- import_tasks: mlag.yml
+  when: "'leafs' in group_names"
+- import_tasks: evpn.yml

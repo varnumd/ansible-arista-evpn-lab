@@ -1,0 +1,6 @@
+---
+- name: Configure MLAG
+  eos_config:
+    src: mlag.j2
+  tags:
+    - mlag

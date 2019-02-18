@@ -1,0 +1,46 @@
+---
+all:
+  children:
+    eos:
+      children:
+        leafs:
+          children:
+            vtep1:
+              hosts:
+                leaf1:
+                  ansible_host: 10.0.0.151
+                leaf2:
+                  ansible_host: 10.0.0.152
+
+            vtep2:
+              hosts:
+                leaf3:
+                  ansible_host: 10.0.0.153
+                leaf4:
+                  ansible_host: 10.0.0.154
+            
+            vtep3:
+              hosts:
+                leaf5:
+                  ansible_host: 10.0.0.155
+                leaf6:
+                  ansible_host: 10.0.0.156
+
+            vtep4:
+              hosts:
+                leaf7:
+                  ansible_host: 10.0.0.157
+                leaf8:
+                  ansible_host: 10.0.0.158
+          vars:
+            ansible_network_os: eos
+        
+        spines:
+          hosts:
+            spine1:
+              ansible_host: 10.0.0.140
+            spine2:
+              ansible_host: 10.0.0.141
+          vars:
+            ansible_network_os: eos
+        

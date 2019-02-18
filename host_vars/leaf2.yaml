@@ -1,0 +1,34 @@
+asn: 65001
+bgp_neighbors:
+- neighbor: 10.0.3.0
+  remote_as: 65001
+  state: present
+- neighbor: 10.0.1.2
+  remote_as: 65000
+  state: present
+- neighbor: 10.0.2.2
+  remote_as: 65000
+  state: present
+evpn_neighbors:
+- neighbor: 10.0.250.1
+  remote_as: 65000
+  state: present
+- neighbor: 10.0.250.2
+  remote_as: 65000
+  state: present
+hostname: leaf2
+interfaces:
+- address: 10.0.1.3
+  description: spine1
+  interface: Ethernet11
+  mask: /31
+- address: 10.0.2.3
+  description: spine2
+  interface: Ethernet12
+  mask: /31
+- address: 10.0.3.1
+  interface: Vlan4091
+  mask: /31
+loopback0_ip: 10.0.250.12
+loopback1_ip: 10.0.255.12
+side: right

@@ -1,0 +1,6 @@
+---
+- name: Configure BGP
+  eos_config:
+    src: bgp.j2
+  tags:
+    - bgp

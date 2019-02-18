@@ -1,0 +1,12 @@
+vrf definition {{ vrf_name }}
+ip routing vrf {{ vrf_name }}
+
+router bgp {{ leaf_asn }}
+   vrf {{ vrf_name }}
+      rd {{ loopback0_ip }}:{{ vrf_id }}
+      route-target import evpn {{ vrf_id }}:{{ vrf_id|int + 100000 }}
+      route-target export evpn {{ vrf_id }}:{{ vrf_id|int + 100000 }}
+      redistribute connected
+
+interface Vxlan1
+   vxlan vrf {{ vrf_name }} vni {{ vrf_id|int + 100000}}

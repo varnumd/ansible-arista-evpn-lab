@@ -1,0 +1,125 @@
+---
+- hosts: leafs
+  connection: local
+  gather_facts: no
+
+  tasks:
+  - name: Gather lldp neighbors
+    eos_command: 
+      commands: 'show lldp neighbor | json'
+    register: output
+    tags:
+      - lldp
+
+  - set_fact:
+      lldp:
+        "{{output.stdout[0].lldpNeighbors|lldp_list}}"
+
+  - name: Validate LLDP Neighbors
+    assert:
+      that: '"spine1" and "spine2" and in lldp'
+      msg: "Check L1 connectivity to Spines"
+    tags:
+      - lldp
+
+  - name: Gather MLAG State
+    eos_command: 
+      commands: 'show mlag | json'
+    register: output
+    tags:
+      - mlag
+
+  - name: Verify MLAG
+    assert:
+      that: >
+        "'active' in output.stdout[0].state"
+        "'connected' in output.stdout[0].negStatus"
+      fail_msg: "MLAG is down!"
+      success_msg: "MLAG is up!"
+    tags:
+      - mlag
+
+- hosts: leafs, spines
+  connection: local
+  gather_facts: no
+
+  tasks:
+  - name: Gather BGP Summary
+    eos_command: 
+      commands: 'show ip bgp summary | json'
+    register: output
+    tags:
+      - bgp
+
+  - name: Get peer count
+    set_fact:
+      peer_count: "{{ (output.stdout[0].vrfs.default.peers|length) }}"
+    tags:
+      - bgp
+
+  - name: Get peer list
+    set_fact:
+      bgp_peers: "{{ output.stdout[0].vrfs.default.peers }}"
+    tags:
+      - bgp
+
+  - name: Validate each leaf has 3 peers
+    assert:
+      that: '(peer_count|int) == 3'
+    when: "'leaf' in inventory_hostname"
+    tags:
+      - bgp
+
+  - name: Validate each spine has 8 peers
+    assert:
+      that: '(peer_count|int) == 8'
+    when: "'spine' in inventory_hostname"
+    tags:
+      - bgp
+
+  - name: Validate all BGP sessions are established
+    assert:
+      that: 'bgp_peers[item]["peerState"] == "Established"' 
+    with_items: "{{ bgp_peers }}"
+    tags:
+      - bgp
+
+  - name: Gather EVPN Summary
+    eos_command: 
+      commands: 'show bgp evpn summary | json'
+    register: output
+    tags:
+      - evpn
+
+  - name: Get EVPN peer list
+    set_fact:
+      bgp_peers: "{{ output.stdout[0].peers }}"
+    tags:
+      - evpn
+
+  - name: Validate each leaf has 2 EVPN peers
+    assert:
+      that: '(bgp_peers|length) == 2'
+    when: "'leaf' in inventory_hostname"
+    tags:
+      - evpn
+
+  - name: Validate each spine has 6 EVPN peers
+    assert:
+      that: '(bgp_peers|length) == 8'
+    when: "'spine' in inventory_hostname"
+    tags:
+      - evpn
+
+  - name: Validate all BGP EVPN sessions are established
+    assert:
+      that: 'bgp_peers[item]["peerState"] == "Established"' 
+    with_items: "{{ bgp_peers }}"
+    tags:
+      - evpn
+
+      
+## Uncomment for addtional debugging
+#  - name: show output
+#    debug:
+#      var: output

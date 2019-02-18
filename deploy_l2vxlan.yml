@@ -1,0 +1,13 @@
+---
+- hosts: leafs
+  connection: local
+  gather_facts: no
+
+  vars:
+    vlan_name: "{{ vlan_name }}"
+    vlan_id: "{{vlan_id }}"
+
+  tasks:
+  - name: Configure L2 VXLAN
+    eos_config:
+      src: l2vxlan.j2
