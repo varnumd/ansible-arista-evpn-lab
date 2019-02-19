@@ -1,7 +1,7 @@
 vrf definition {{ vrf_name }}
 ip routing vrf {{ vrf_name }}
 
-router bgp {{ leaf_asn }}
+router bgp {{ asn }}
    vrf {{ vrf_name }}
       rd {{ loopback0_ip }}:{{ vrf_id }}
       route-target import evpn {{ vrf_id }}:{{ vrf_id|int + 100000 }}

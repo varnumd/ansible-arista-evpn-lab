@@ -6,8 +6,8 @@ vlan {{ vlan_id }}
 interface Vxlan1
    vxlan vlan {{ vlan_id }} vni {{ vlan_vni }}
 
-router bgp {{ leaf_asn }}
+router bgp {{ asn }}
    vlan {{ vlan_id }}
-      rd {{ leaf_asn }}:{{ vlan_vni }}
+      rd {{ asn }}:{{ vlan_vni }}
       route-target both {{ vlan_id }}:{{ vlan_vni }}
       redistribute learned
