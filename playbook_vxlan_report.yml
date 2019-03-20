@@ -1,0 +1,52 @@
+---
+- hosts: eos
+  connection: local
+  gather_facts: no
+  vars:
+    - results: results
+
+  tasks:
+    - name: Clean the temporary directory
+      file: 
+          path: "{{results}}" 
+          state: absent
+      run_once: true
+      changed_when: no
+
+    - name: Create the temporary directory
+      file: 
+        path: "{{results}}" 
+        state: directory
+      run_once: true
+      changed_when: no
+
+    - name: Collect all deployed L2/L3 VXLAN Services
+      eos_command:
+        commands: "show interface vxlan1 | json"
+      register: output
+
+    - set_fact:
+        vnis:
+          "{{output.stdout[0].interfaces.Vxlan1}}"
+
+    - name: Generate Individual Reports
+      template:
+        src: 'templates/report.j2'
+        dest: "{{results}}/{{inventory_hostname}}.txt"
+      delegate_to: 127.0.0.1
+      changed_when: no
+
+    - name: Assemble Report
+      assemble:
+        src: "{{results}}"
+        regexp: ^.+\.txt$
+        dest: "final_report.csv"
+      changed_when: no
+
+    - name: Add title to report
+      lineinfile:
+        path: final_report.csv
+        line: 'device,type,id,vni'
+        insertbefore: BOF
+      changed_when: no
+      run_once: true

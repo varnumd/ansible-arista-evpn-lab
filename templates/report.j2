@@ -1,0 +1,6 @@
+{% for item in vnis.vlanToVniMap %}
+{{inventory_hostname}},vlan,{{item}},{{vnis.vlanToVniMap[item].vni}}
+{% endfor %}
+{% for key,value in vnis.vrfToVniMap.items() %}
+{{inventory_hostname}},vrf,{{key}},{{value}}
+{% endfor %}
