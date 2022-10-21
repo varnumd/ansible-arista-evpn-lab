@@ -8,7 +8,7 @@ def search_dict_list(a_val, b_val, c_list):
 # Define Variables
 
 num_spines = 2
-num_leafs = 8
+num_leafs = 4
 p2p_range = '10.0.'
 lo0_range = '10.0.250.'
 lo1_range = '10.0.255.'
